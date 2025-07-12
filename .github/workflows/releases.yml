@@ -25,6 +25,14 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: brew install openssl
 
+      - name: Install Chocolatey + MinGW (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: powershell
+        run: |
+          Set-ExecutionPolicy Bypass -Scope Process -Force
+          iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+          choco install -y mingw
+
       - name: Build (Linux & macOS)
         if: matrix.os != 'windows-latest'
         run: |
@@ -38,13 +46,12 @@ jobs:
             gcc -Wall -O2 src/*.c -Isrc/include -lcrypto -o build/lockr-linux
           fi
 
-      - name: Build (Windows with cl.exe)
+      - name: Build (Windows)
         if: matrix.os == 'windows-latest'
-        shell: pwsh
+        shell: powershell
         run: |
           mkdir build
-          cl src/*.c /I src\include /Fe:build\lockr.exe /link crypt32.lib advapi32.lib
-          if (!(Test-Path build\lockr.exe)) { throw "Build failed!" }
+          & 'C:\ProgramData\chocolatey\bin\gcc.exe' -Wall -O2 src/*.c -Isrc/include -lcrypto -o build/lockr.exe
 
       - name: Upload
         uses: actions/upload-artifact@v4
@@ -67,7 +74,7 @@ jobs:
         with:
           path: dist
 
-      - name: Create Release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           name: ${{ github.ref_name }}

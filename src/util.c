@@ -14,7 +14,7 @@ void print_banner(void) {
     printf("███████╗╚██████╔╝╚██████╗██║  ██╗██║  ██║\n");
     printf("╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝\n");
     printf("                                          \n");
-    printf("Lockr - Encrypted File Locker\n");
+    printf("Lockr - Encrypted File Locker\n | v0.0.1");
     printf("\033[0m\n");
 }
 

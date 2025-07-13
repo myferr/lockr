@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest]
 
     steps:
       - name: Checkout code
@@ -25,18 +25,7 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: brew install openssl
 
-      - name: Setup MSYS2 on Windows
-        if: matrix.os == 'windows-latest'
-        uses: msys2/setup-msys2@v2
-        with:
-          update: true
-          msystem: MINGW64
-          install: >
-            mingw-w64-x86_64-toolchain
-            mingw-w64-x86_64-openssl
-
       - name: Build (Linux & macOS)
-        if: matrix.os != 'windows-latest'
         run: |
           mkdir -p build
           if [[ "${{ runner.os }}" == "macOS" ]]; then
@@ -47,13 +36,6 @@ jobs:
           else
             gcc -Wall -O2 src/*.c -Isrc/include -lcrypto -o build/lockr-linux
           fi
-
-      - name: Build (Windows with MSYS2 gcc)
-        if: matrix.os == 'windows-latest'
-        shell: bash
-        run: |
-          mkdir build
-          gcc -Wall -O2 src/*.c -Isrc/include -lcrypto -o build/lockr.exe
 
       - name: Upload
         uses: actions/upload-artifact@v4
